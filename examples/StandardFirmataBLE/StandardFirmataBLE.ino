@@ -38,6 +38,8 @@
 // Arduino IDE v1.6.6 or higher. Hardware serial should work back to Arduino 1.0.
 //#include "utility/SerialFirmata.h"
 
+#include "utility/MWorksDigitalPulse.h"
+
 // follow the instructions in bleConfig.h to configure your BLE hardware
 #include "bleConfig.h"
 
@@ -62,6 +64,10 @@
 
 #ifdef FIRMATA_SERIAL_FEATURE
 SerialFirmata serialFeature;
+#endif
+
+#ifdef MWORKS_DIGITAL_PULSE_FEATURE
+MWorksDigitalPulse digitalPulseFeature;
 #endif
 
 /* analog inputs */
@@ -298,6 +304,9 @@ void setPinModeCallback(byte pin, int mode)
     } else {
       portConfigInputs[pin / 8] &= ~(1 << (pin & 7));
     }
+#ifdef MWORKS_DIGITAL_PULSE_FEATURE
+    digitalPulseFeature.disablePin(pin);
+#endif
   }
   Firmata.setPinState(pin, 0);
   switch (mode) {
@@ -369,6 +378,12 @@ void setPinModeCallback(byte pin, int mode)
       serialFeature.handlePinMode(pin, PIN_MODE_SERIAL);
 #endif
       break;
+#ifdef MWORKS_DIGITAL_PULSE_FEATURE
+    case MWORKS_PIN_MODE_INPUT_PULSE:
+    case MWORKS_PIN_MODE_OUTPUT_PULSE:
+      digitalPulseFeature.handlePinMode(pin, mode);
+      break;
+#endif
     default:
       Firmata.sendString("Unknown pin mode"); // TODO: put error msgs in EEPROM
   }
@@ -674,6 +689,9 @@ void sysexCallback(byte command, byte argc, byte *argv)
 #ifdef FIRMATA_SERIAL_FEATURE
         serialFeature.handleCapability(pin);
 #endif
+#ifdef MWORKS_DIGITAL_PULSE_FEATURE
+        digitalPulseFeature.handleCapability(pin);
+#endif
         Firmata.write(127);
       }
       Firmata.write(END_SYSEX);
@@ -707,6 +725,13 @@ void sysexCallback(byte command, byte argc, byte *argv)
       serialFeature.handleSysex(command, argc, argv);
 #endif
       break;
+
+#ifdef MWORKS_DIGITAL_PULSE_FEATURE
+    case MWORKS_DIGITAL_PULSE:
+    case MWORKS_REPORT_DIGITAL_PULSE:
+      digitalPulseFeature.handleSysex(command, argc, argv);
+      break;
+#endif
   }
 }
 
@@ -720,6 +745,10 @@ void systemResetCallback()
 
 #ifdef FIRMATA_SERIAL_FEATURE
   serialFeature.reset();
+#endif
+
+#ifdef MWORKS_DIGITAL_PULSE_FEATURE
+  digitalPulseFeature.reset();
 #endif
 
   if (isI2CEnabled) {
@@ -836,5 +865,9 @@ void loop()
 
 #ifdef FIRMATA_SERIAL_FEATURE
   serialFeature.update();
+#endif
+
+#ifdef MWORKS_DIGITAL_PULSE_FEATURE
+  digitalPulseFeature.update();
 #endif
 }
