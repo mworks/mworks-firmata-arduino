@@ -261,6 +261,40 @@ writePort(port, value, bitmask):  Write an 8 bit port.
 #define PIN_TO_SERVO(p)         ((p) - 2)
 
 
+// Arduino Nano 33 IoT
+#elif defined(ARDUINO_SAMD_NANO_33_IOT)
+#define TOTAL_ANALOG_PINS       8
+#define TOTAL_PINS              22 // 14 Digital + 8 Analog
+#define IS_PIN_DIGITAL(p)       ((p) < TOTAL_PINS)
+#define IS_PIN_ANALOG(p)        ((p) > 13 && (p) < 14 + TOTAL_ANALOG_PINS)
+#define IS_PIN_PWM(p)           digitalPinHasPWM(p)
+#define IS_PIN_SERVO(p)         (IS_PIN_DIGITAL(p) && (p) < MAX_SERVOS) // deprecated since v2.4
+#define IS_PIN_I2C(p)           ((p) == PIN_WIRE_SDA || (p) == PIN_WIRE_SCL)
+#define IS_PIN_SPI(p)           ((p) == PIN_SPI_SS || (p) == PIN_SPI_MOSI || (p) == PIN_SPI_MISO || (p) == PIN_SPI_SCK)
+#define IS_PIN_SERIAL(p)        ((p) == PIN_SERIAL1_RX || (p) == PIN_SERIAL1_TX) //defined in variant.h  RX = 0 TX = 1
+#define PIN_TO_DIGITAL(p)       (p)
+#define PIN_TO_ANALOG(p)        ((p) - 14)
+#define PIN_TO_PWM(p)           PIN_TO_DIGITAL(p)
+#define PIN_TO_SERVO(p)         (p) // deprecated since v2.4
+
+
+// Arduino Nano 33 BLE
+#elif defined(ARDUINO_ARDUINO_NANO33BLE)
+#define TOTAL_ANALOG_PINS       8
+#define TOTAL_PINS              22 // 14 Digital + 8 Analog
+#define IS_PIN_DIGITAL(p)       ((p) >= 0 && (p) < TOTAL_PINS)
+#define IS_PIN_ANALOG(p)        ((p) >= 14 && (p) < 14 + TOTAL_ANALOG_PINS)
+#define IS_PIN_PWM(p)           digitalPinHasPWM(p)
+#define IS_PIN_SERVO(p)         (IS_PIN_DIGITAL(p) && (p) < MAX_SERVOS) // deprecated since v2.4
+#define IS_PIN_I2C(p)           ((p) == PIN_WIRE_SDA || (p) == PIN_WIRE_SCL) // SDA = 18, SCL = 19
+#define IS_PIN_SPI(p)           ((p) == PIN_SPI_SS || (p) == PIN_SPI_MOSI || (p) == PIN_SPI_MISO || (p) == PIN_SPI_SCK)
+#define IS_PIN_SERIAL(p)        ((p) == PIN_SERIAL_RX || (p) == PIN_SERIAL_TX) //defined in pins_arduino.h  RX = 1 TX = 0
+#define PIN_TO_DIGITAL(p)       (p)
+#define PIN_TO_ANALOG(p)        ((p) - 14)
+#define PIN_TO_PWM(p)           PIN_TO_DIGITAL(p)
+#define PIN_TO_SERVO(p)         (p) // deprecated since v2.4
+
+
 // Arduino/Genuino MKR1000 or MKR1010
 #elif defined(ARDUINO_SAMD_MKR1000)	|| defined(ARDUINO_SAMD_MKRWIFI1010)
 #define TOTAL_ANALOG_PINS       7
@@ -534,6 +568,36 @@ writePort(port, value, bitmask):  Write an 8 bit port.
 #define PIN_TO_DIGITAL(p)       (p)
 #define PIN_TO_ANALOG(p)        ((p) - 38)
 #define PIN_TO_PWM(p)           PIN_TO_DIGITAL(p)
+#define PIN_TO_SERVO(p)         (p)
+
+// Teensy 4.0
+#elif defined(__IMXRT1062__)
+#define TOTAL_ANALOG_PINS       14
+#define TOTAL_PINS              40
+#define VERSION_BLINK_PIN       13
+#define PIN_SERIAL1_RX          0
+#define PIN_SERIAL1_TX          1
+#define PIN_SERIAL2_RX          7
+#define PIN_SERIAL2_TX          8
+#define PIN_SERIAL3_RX          15
+#define PIN_SERIAL3_TX          14
+#define PIN_SERIAL4_RX          16
+#define PIN_SERIAL4_TX          17
+#define PIN_SERIAL5_RX          21
+#define PIN_SERIAL5_TX          20
+#define PIN_SERIAL6_RX          25
+#define PIN_SERIAL6_TX          24
+#define PIN_SERIAL7_RX          28
+#define PIN_SERIAL7_TX          29
+#define IS_PIN_DIGITAL(p)       ((p) >= 0 && (p) < TOTAL_PINS)
+#define IS_PIN_ANALOG(p)        ((p) >= 14 && (p) <= 27)
+#define IS_PIN_PWM(p)           (((p) >= 0 && (p) <= 16) || ((p) >= 18 && (p) <= 19) || ((p) >= 22 && (p) <= 25) || ((p) >= 28 && (p) <= 29)|| ((p) >= 33 && (p) <= 39))
+#define IS_PIN_SERVO(p)         ((p) >= 0 && (p) < MAX_SERVOS)
+#define IS_PIN_I2C(p)           ((p) == 18 || (p) == 19)
+#define IS_PIN_SERIAL(p)        (((p) >= 0 && (p) <= 1) || ((p) >= 7 && (p) <= 8) || ((p) >= 14 && (p) <= 17) || ((p) >= 20 && (p) <= 21) || ((p) >= 24 && (p) <= 25) || ((p) >= 28 && (p) <= 29))
+#define PIN_TO_DIGITAL(p)       (p)
+#define PIN_TO_ANALOG(p)        ((p) - 14)
+#define PIN_TO_PWM(p)           (p)
 #define PIN_TO_SERVO(p)         (p)
 
 
