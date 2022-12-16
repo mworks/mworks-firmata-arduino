@@ -28,7 +28,6 @@ Most of the time you will be interacting with Arduino with a client library on t
 
 * processing
   * [https://github.com/firmata/processing](https://github.com/firmata/processing)
-  * [http://funnel.cc](http://funnel.cc)
 * python
   * [https://github.com/MrYsLab/pymata4](https://github.com/MrYsLab/pymata4)
   * [https://github.com/MrYsLab/pymata-express](https://github.com/MrYsLab/pymata-express)
@@ -88,6 +87,8 @@ Most of the time you will be interacting with Arduino with a client library on t
   * [https://github.com/zankich/rust-firmata](https://github.com/zankich/rust-firmata)
 * Pure Data
   * [https://github.com/NullMember/PDFirmata](https://github.com/NullMember/PDFirmata)
+* Common Lisp
+  * [https://github.com/cjfuller/cl-firmata](https://github.com/cjfuller/cl-firmata)
 
 Note: The above libraries may support various versions of the Firmata protocol and therefore may not support all features of the latest Firmata spec nor all Arduino and Arduino-compatible boards. Refer to the respective projects for details.
 
