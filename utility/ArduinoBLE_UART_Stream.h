@@ -21,7 +21,7 @@ class ArduinoBLE_UART_Stream : public Stream
     void setLocalName(const char *localName);
     void setAdvertisingInterval(unsigned short advertisingInterval);
     void setConnectionInterval(unsigned short minConnInterval, unsigned short maxConnInterval);
-    void setFlushInterval(int flushInterval);
+    void setFlushInterval(unsigned long flushInterval);
 
     void begin();
     bool poll();
@@ -56,7 +56,7 @@ class ArduinoBLE_UART_Stream : public Stream
     unsigned short advertisingInterval;
     unsigned short minConnInterval;
     unsigned short maxConnInterval;
-    int flushInterval;
+    unsigned long flushInterval;
 
     bool connected;
 
@@ -107,11 +107,11 @@ void ArduinoBLE_UART_Stream::setConnectionInterval(unsigned short minConnInterva
   this->maxConnInterval = maxConnInterval;
 }
 
-void ArduinoBLE_UART_Stream::setFlushInterval(int flushInterval)
+void ArduinoBLE_UART_Stream::setFlushInterval(unsigned long flushInterval)
 {
   // The minimum allowed connection interval is 7.5ms, so don't try to flush
   // more frequently than that
-  this->flushInterval = max(flushInterval, 8);
+  this->flushInterval = max(flushInterval, 8ul);
 }
 
 void ArduinoBLE_UART_Stream::begin()
