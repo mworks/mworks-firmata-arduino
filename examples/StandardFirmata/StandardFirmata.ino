@@ -27,15 +27,23 @@
 #include <Wire.h>
 #include <Firmata.h>
 
+/*
+ * Uncomment the following include to enable interfacing
+ * with Serial devices via hardware or software serial.
+ */
+// In order to use software serial, you will need to compile this sketch with
+// Arduino IDE v1.6.6 or higher. Hardware serial should work back to Arduino 1.0.
+//#include "utility/SerialFirmata.h"
+
 #include "utility/MWorksDigitalPulse.h"
 
-#define I2C_WRITE                   B00000000
-#define I2C_READ                    B00001000
-#define I2C_READ_CONTINUOUSLY       B00010000
-#define I2C_STOP_READING            B00011000
-#define I2C_READ_WRITE_MODE_MASK    B00011000
-#define I2C_10BIT_ADDRESS_MODE_MASK B00100000
-#define I2C_END_TX_MASK             B01000000
+#define I2C_WRITE                   0x00 //B00000000
+#define I2C_READ                    0x08 //B00001000
+#define I2C_READ_CONTINUOUSLY       0x10 //B00010000
+#define I2C_STOP_READING            0x18 //B00011000
+#define I2C_READ_WRITE_MODE_MASK    0x18 //B00011000
+#define I2C_10BIT_ADDRESS_MODE_MASK 0x20 //B00100000
+#define I2C_END_TX_MASK             0x40 //B01000000
 #define I2C_STOP_TX                 1
 #define I2C_RESTART_TX              0
 #define I2C_MAX_QUERIES             8
@@ -43,7 +51,6 @@
 
 // the minimum interval for sampling analog input
 #define MINIMUM_SAMPLING_INTERVAL   1
-
 
 /*==============================================================================
  * GLOBAL VARIABLES

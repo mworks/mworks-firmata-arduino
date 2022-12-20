@@ -676,7 +676,7 @@ void sysexCallback(byte command, byte argc, byte *argv)
         }
         if (IS_PIN_PWM(pin)) {
           Firmata.write(PIN_MODE_PWM);
-          Firmata.write(8); // 8 = 8-bit resolution
+          Firmata.write(DEFAULT_PWM_RESOLUTION);
         }
         if (IS_PIN_DIGITAL(pin)) {
           Firmata.write(PIN_MODE_SERVO);
@@ -845,7 +845,7 @@ void loop()
 
   currentMillis = millis();
   if (currentMillis - previousMillis > samplingInterval) {
-    previousMillis = currentMillis;
+    previousMillis += samplingInterval;
     /* ANALOGREAD - do all analogReads() at the configured sampling interval */
     for (pin = 0; pin < TOTAL_PINS; pin++) {
       if (IS_PIN_ANALOG(pin) && Firmata.getPinMode(pin) == PIN_MODE_ANALOG) {
