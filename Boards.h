@@ -141,6 +141,13 @@ writePort(port, value, bitmask):  Write an 8 bit port.
 #define digitalPinHasPWM(p)     IS_PIN_DIGITAL(p)
 #endif
 
+#undef IS_PIN_INTERRUPT
+#if defined(digitalPinToInterrupt) && defined(NOT_AN_INTERRUPT)
+#define IS_PIN_INTERRUPT(p)     (digitalPinToInterrupt(p) > NOT_AN_INTERRUPT)
+#else
+#define IS_PIN_INTERRUPT(p)     (0)
+#endif
+
 // Arduino Duemilanove, Diecimila, and NG
 #if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__) || defined(__AVR_ATmega328__)
 #if defined(NUM_ANALOG_INPUTS) && NUM_ANALOG_INPUTS == 6
@@ -219,6 +226,20 @@ writePort(port, value, bitmask):  Write an 8 bit port.
 #define PIN_TO_PWM(p)           PIN_TO_DIGITAL(p)
 #define PIN_TO_SERVO(p)         ((p) - 2)
 
+#elif defined(AVR_NANO_EVERY) || defined(ARDUINO_NANO_EVERY) || defined(ARDUINO_AVR_NANO_EVERY)
+#define TOTAL_ANALOG_PINS 8
+#define TOTAL_PINS 24 // 14 digital + 8 analog + 2 i2c
+#define IS_PIN_DIGITAL(p) ((p) >= 2 && (p) <= 21) // TBD if pins 0 and 1 are usable
+#define IS_PIN_ANALOG(p) ((p) >= 14 && (p) < 14 + TOTAL_ANALOG_PINS)
+#define IS_PIN_PWM(p) digitalPinHasPWM(p)
+#define IS_PIN_SERVO(p) (IS_PIN_DIGITAL(p) && (p) < MAX_SERVOS) // deprecated since v2.4
+#define IS_PIN_I2C(p) ((p) == PIN_WIRE_SDA || (p) == PIN_WIRE_SCL) // SDA = 22, SCL = 23
+#define IS_PIN_SPI(p) ((p) == SS || (p) == MOSI || (p) == MISO || (p) == SCK)
+#define PIN_TO_DIGITAL(p) (p)
+#define PIN_TO_ANALOG(p) ((p) - 14)
+#define PIN_TO_PWM(p) PIN_TO_DIGITAL(p)
+#define PIN_TO_SERVO(p) (p) // deprecated since v2.4
+
 // Arduino UNO WiFi rev2 (ATMega 4809)
 #elif defined(__AVR_ATmega4809__)
 #define TOTAL_ANALOG_PINS       6
@@ -237,20 +258,6 @@ writePort(port, value, bitmask):  Write an 8 bit port.
 #define PIN_TO_ANALOG(p)        (p) - 14
 #define PIN_TO_PWM(p)           PIN_TO_DIGITAL(p)
 #define PIN_TO_SERVO(p)         (p)
-
-#elif defined(AVR_NANO_EVERY) || defined(ARDUINO_NANO_EVERY) || defined(ARDUINO_AVR_NANO_EVERY)
-#define TOTAL_ANALOG_PINS 8
-#define TOTAL_PINS 24 // 14 digital + 8 analog + 2 i2c
-#define IS_PIN_DIGITAL(p) ((p) >= 2 && (p) <= 21) // TBD if pins 0 and 1 are usable
-#define IS_PIN_ANALOG(p) ((p) >= 14 && (p) < 14 + TOTAL_ANALOG_PINS)
-#define IS_PIN_PWM(p) digitalPinHasPWM(p)
-#define IS_PIN_SERVO(p) (IS_PIN_DIGITAL(p) && (p) < MAX_SERVOS) // deprecated since v2.4
-#define IS_PIN_I2C(p) ((p) == PIN_WIRE_SDA || (p) == PIN_WIRE_SCL) // SDA = 22, SCL = 23
-#define IS_PIN_SPI(p) ((p) == SS || (p) == MOSI || (p) == MISO || (p) == SCK)
-#define PIN_TO_DIGITAL(p) (p)
-#define PIN_TO_ANALOG(p) ((p) - 14)
-#define PIN_TO_PWM(p) PIN_TO_DIGITAL(p)
-#define PIN_TO_SERVO(p) (p) // deprecated since v2.4
 
 // Arduino DUE
 #elif defined(__SAM3X8E__)
@@ -447,6 +454,30 @@ writePort(port, value, bitmask):  Write an 8 bit port.
 #define PIN_TO_PWM(p)           PIN_TO_DIGITAL(p)
 #define PIN_TO_SERVO(p)         (p) // deprecated since v2.4
 
+// Arduino UNO R4 Minima and Wifi
+// The pinout is the same as for the classical UNO R3
+#elif defined(ARDUINO_UNOR4_MINIMA) || defined(ARDUINO_UNOR4_WIFI)
+#if defined(NUM_ANALOG_INPUTS) && NUM_ANALOG_INPUTS == 6
+#define TOTAL_ANALOG_PINS       6
+#define TOTAL_PINS              20 // 14 digital + 6 analog
+#else
+#define TOTAL_ANALOG_PINS       8
+#define TOTAL_PINS              22 // 14 digital + 8 analog
+#endif
+// These have conflicting(?) definitions in the core for this CPU
+#undef IS_PIN_PWM
+#undef IS_PIN_ANALOG
+#define VERSION_BLINK_PIN       13
+#define IS_PIN_DIGITAL(p)       ((p) >= 2 && (p) <= 19)
+#define IS_PIN_ANALOG(p)        ((p) >= 14 && (p) < 14 + TOTAL_ANALOG_PINS)
+#define IS_PIN_PWM(p)           digitalPinHasPWM(p)
+#define IS_PIN_SERVO(p)         (IS_PIN_DIGITAL(p) && (p) - 2 < MAX_SERVOS)
+#define IS_PIN_I2C(p)           ((p) == 18 || (p) == 19)
+#define IS_PIN_SPI(p)           ((p) == SS || (p) == MOSI || (p) == MISO || (p) == SCK)
+#define PIN_TO_DIGITAL(p)       (p)
+#define PIN_TO_ANALOG(p)        ((p) - 14)
+#define PIN_TO_PWM(p)           PIN_TO_DIGITAL(p)
+#define PIN_TO_SERVO(p)         ((p) - 2)
 
 // Teensy 1.0
 #elif defined(__AVR_AT90USB162__)
@@ -586,16 +617,16 @@ writePort(port, value, bitmask):  Write an 8 bit port.
 
 // Teensy 4.0 and Teensy 4.1
 #elif defined(__IMXRT1062__)
-#if !defined(TEENSY40) && !defined(TEENSY41)
-  #warning Assuming TEENSY40. Please #define TEENSY40 or TEENSY41.
-  #define TEENSY40
+#if !defined(ARDUINO_TEENSY40) && !defined(ARDUINO_TEENSY41)
+  #warning Assuming ARDUINO_TEENSY40. Please #define ARDUINO_TEENSY40 or ARDUINO_TEENSY41.
+  #define ARDUINO_TEENSY40
 #endif
-#if defined(TEENSY40)
+#if defined(ARDUINO_TEENSY40)
   #define TOTAL_PINS              40
   #define TOTAL_ANALOG_PINS       14
   #define IS_PIN_ANALOG(p)        ((p) >= 14 && (p) <= 27)
   #define PIN_TO_ANALOG(p)        ((p) - 14)
-#elif defined(TEENSY41)
+#elif defined(ARDUINO_TEENSY41)
   #define TOTAL_PINS              55
   #define TOTAL_ANALOG_PINS       18
   #define IS_PIN_ANALOG(p)        (((p) >= 14 && (p) <= 27) || ((p) >= 38 && (p) <= 41))
@@ -616,7 +647,7 @@ writePort(port, value, bitmask):  Write an 8 bit port.
 #define PIN_SERIAL6_TX          24
 #define PIN_SERIAL7_RX          28
 #define PIN_SERIAL7_TX          29
-#if defined(TEENSY40)
+#if defined(ARDUINO_TEENSY40)
   #define IS_PIN_SERIAL(p)        (((p) == PIN_SERIAL1_RX) || \
                                    ((p) == PIN_SERIAL1_TX) || \
                                    ((p) == PIN_SERIAL2_RX) || \
@@ -638,7 +669,7 @@ writePort(port, value, bitmask):  Write an 8 bit port.
                                    ((p) == 28) || \
                                    ((p) == 29) || \
                                    ((p) >= 33 && (p) <= 39))
-#elif defined(TEENSY41)
+#elif defined(ARDUINO_TEENSY41)
   #define PIN_SERIAL8_RX          34
   #define PIN_SERIAL8_TX          35
   #define IS_PIN_SERIAL(p)         (((p) == PIN_SERIAL1_RX) || \

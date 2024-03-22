@@ -79,8 +79,8 @@ Most of the time you will be interacting with Arduino with a client library on t
   * [https://www.wolfram.com/system-modeler/libraries/model-plug/](https://www.wolfram.com/system-modeler/libraries/model-plug/)
 * Go
   * [https://github.com/kraman/go-firmata](https://github.com/kraman/go-firmata)
-* vvvv
-  * [https://vvvv.org/blog/arduino-second-service](https://vvvv.org/blog/arduino-second-service)
+* vvvv/VL
+  * [https://github.com/vvvv/VL.IO.Firmata](https://github.com/vvvv/VL.IO.Firmata)
 * openFrameworks
   * [http://openframeworks.cc/documentation/communication/ofArduino/](http://openframeworks.cc/documentation/communication/ofArduino/)
 * Rust
@@ -89,6 +89,8 @@ Most of the time you will be interacting with Arduino with a client library on t
   * [https://github.com/NullMember/PDFirmata](https://github.com/NullMember/PDFirmata)
 * Common Lisp
   * [https://github.com/cjfuller/cl-firmata](https://github.com/cjfuller/cl-firmata)
+* Linux Kernel Module
+  * [https://github.com/logicog/firmata_mod]
 
 Note: The above libraries may support various versions of the Firmata protocol and therefore may not support all features of the latest Firmata spec nor all Arduino and Arduino-compatible boards. Refer to the respective projects for details.
 
